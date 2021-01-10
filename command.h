@@ -43,8 +43,8 @@ public:
 	{}
 	virtual ~CreateCommand()
 	{}
-	virtual void undo() override { reactor->pop_back(); }
-	virtual void redo() override { reactor->push_back(Factory::create(order)); }
+	void undo() override { reactor->pop_back(); }
+	void redo() override { reactor->push_back(Factory::create(order)); }
 };
 
 class DeleteCommand : public ShapeCommand
@@ -99,8 +99,8 @@ public:
 	{}
 	virtual ~ColorOutlineCommand()
 	{}
-	virtual void undo() override { (*reactor)[index]->setOutlineColor(previousColor); }
-	virtual void redo() override { (*reactor)[index]->setOutlineColor(color); }
+	void undo() override { (*reactor)[index]->setOutlineColor(previousColor); }
+	void redo() override { (*reactor)[index]->setOutlineColor(color); }
 };
 
 class ColorFillCommand : public ShapeCommand
@@ -113,8 +113,8 @@ public:
 	{}
 	virtual ~ColorFillCommand()
 	{}
-	virtual void undo() override { (*reactor)[index]->setFillColor(previousColor); }
-	virtual void redo() override { (*reactor)[index]->setFillColor(color); }
+	void undo() override { (*reactor)[index]->setFillColor(previousColor); }
+	void redo() override { (*reactor)[index]->setFillColor(color); }
 };
 
 class Z_indexCommand : public ShapeCommand
@@ -127,8 +127,8 @@ public:
 	{}
 	virtual ~Z_indexCommand()
 	{}
-	virtual void undo() override { std::swap((*reactor)[previousIndex], (*reactor)[index]); }
-	virtual void redo() override { std::swap((*reactor)[index], (*reactor)[previousIndex]); }
+	void undo() override { std::swap((*reactor)[previousIndex], (*reactor)[index]); }
+	void redo() override { std::swap((*reactor)[index], (*reactor)[previousIndex]); }
 };
 
 #endif // LINKED_LIST_H
