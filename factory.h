@@ -87,9 +87,9 @@ public:
 					return std::make_shared<Circle>(
 						sf::Vector2f(val[1], val[2]), 					// position(x,y)
 						val[3], 										// radius
-						getColor(s[4]),									// fillcolor(r,g,b,a)
-						getColor(s[5]),								 	// outlineColor(r,g,b,a)
-						getColor(s[6])								 	// selectColor(r,g,b,a)
+						getColor(s[4]),									// fillcolor(sf::Color)
+						getColor(s[5]),								 	// outlineColor(sf::Color)
+						getColor(s[6])								 	// selectColor(sf::Color)
 					);
 
 				}
@@ -103,9 +103,9 @@ public:
 					return std::make_shared<Rectangle>(
 						sf::Vector2f(val[1], val[2]), 					// position(x,y)
 						sf::Vector2f(val[3], val[4]),					// size(x,y)
-						getColor(s[5]),									// fillcolor(r,g,b,a)
-						getColor(s[6]),								 	// outlineColor(r,g,b,a)
-						getColor(s[7])								 	// selectColor(r,g,b,a)
+						getColor(s[5]),									// fillcolor(sf::Color)
+						getColor(s[6]),								 	// outlineColor(sf::Color)
+						getColor(s[7])								 	// selectColor(sf::Color)
 					);
 
 				}
@@ -119,9 +119,9 @@ public:
 					return std::make_shared<Triangle>(
 						sf::Vector2f(val[1], val[2]), 					// position(x,y)
 						val[3], 										// radius
-						getColor(s[4]),									// fillcolor(r,g,b,a)
-						getColor(s[5]),								 	// outlineColor(r,g,b,a)
-						getColor(s[6])								 	// selectColor(r,g,b,a)
+						getColor(s[4]),									// fillcolor(sf::Color)
+						getColor(s[5]),								 	// outlineColor(sf::Color)
+						getColor(s[6])								 	// selectColor(sf::Color)
 					);
 
 				}

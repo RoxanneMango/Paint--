@@ -36,7 +36,8 @@ Paint::Paint(std::string savePATH, std::string loadPATH, unsigned int maxCommand
 		{
 			throw "Something went wrong while building the menus";
 		}
-	//	menu, names, offsetX, offsetY, divPosX, divPosY)	
+		
+		// menu, names, offsetX, offsetY, divPosX, divPosY)
 		fillMenu(menus[0], iconNames[0], 8, -2, 5, 3);
 		fillMenu(menus[1], iconNames[1], 2, 6, 6, 3);
 
@@ -297,7 +298,6 @@ Paint::fillMenu(std::shared_ptr<Menu> menu, std::vector<std::string> names, int 
 		static unsigned int column = 0;
 
 		double divdiv = 2;
-
 		int numOfDividers = 0;
 
 		for(std::string name : names)

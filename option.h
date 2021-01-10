@@ -1,7 +1,6 @@
 #ifndef OPTION_H
 #define OPTION_H
 
-// Get number of elements with cool macro hack . . .
 enum class Option
 {
 	BEGIN = __LINE__,

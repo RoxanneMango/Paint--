@@ -68,8 +68,7 @@ public:
 			std::to_string((int)body.getSize().y),
 			getColor(fillColor),
 			getColor(outlineColor),
-			getColor(selectColor),
-			";"
+			getColor(selectColor)
 		};
 	}
 };

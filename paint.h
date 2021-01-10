@@ -23,11 +23,10 @@
 #include "menu.h"
 #include "icon.h"
 #include "cursor.h"
-#include "action.h"
 //
-#include "factory.h"
 #include "option.h"
-#include "command.h"
+#include "action.h"
+#include "factory.h"
 #include "command_list.h"
 
 class Paint

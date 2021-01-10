@@ -41,11 +41,7 @@ public:
 	
 	std::string getReceipt() override
 	{
-		std::string s;
-		
-		s += std::to_string((int)id);
-		
-		return s;
+		return NULL;
 	}
 
 	std::vector<std::string> getOrder() override

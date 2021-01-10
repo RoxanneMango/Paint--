@@ -65,8 +65,7 @@ public:
 			std::to_string((int)body.getRadius()),
 			getColor(fillColor),
 			getColor(outlineColor),
-			getColor(selectColor),
-			";"
+			getColor(selectColor)
 		};
 	}
 };
