@@ -429,24 +429,24 @@ Paint::addActions()
 						{
 							if((shapeIterator) != userShapes.rend()-1)
 							{
-								std::iter_swap(shapeIterator+1, shapeIterator);
 								commands.push_back( std::shared_ptr<ShapeCommand>
 									(
-										new Z_indexCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), userShapes.end() - shapeIterator.base() )
+										new Z_indexCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), std::distance(shapeIterator, userShapes.rend()-1) - 1 )
 									)
 								);
+								std::iter_swap(shapeIterator+1, shapeIterator);
 							}
 						}
 						else if(option == Option::ADD_Z)
 						{
 							if((shapeIterator) != userShapes.rbegin())
 							{
-								std::iter_swap(shapeIterator-1, shapeIterator);
 								commands.push_back( std::shared_ptr<ShapeCommand>
 									(
-										new Z_indexCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), userShapes.end() - shapeIterator.base() )
+										new Z_indexCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), std::distance(shapeIterator, userShapes.rend()-1) + 1 )
 									)
 								);
+								std::iter_swap(shapeIterator-1, shapeIterator);
 							}
 						}
 						else if(option == Option::RESIZE_SUB)

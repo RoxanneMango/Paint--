@@ -122,7 +122,8 @@ class Z_indexCommand : public ShapeCommand
 private:
 	unsigned int previousIndex;
 public:
-	Z_indexCommand(std::vector<std::shared_ptr<Shape>> * reactor, unsigned int index, unsigned int previousIndex) : ShapeCommand(reactor, index), previousIndex(previousIndex)
+	Z_indexCommand(std::vector<std::shared_ptr<Shape>> * reactor, unsigned int index, unsigned int previousIndex) : 
+		ShapeCommand(reactor, index), previousIndex(previousIndex)
 	{}
 	virtual ~Z_indexCommand()
 	{}

@@ -10,7 +10,6 @@
 #include <stdexcept>
 #include <fstream>
 #include <cstring>
-//
 #include <algorithm>
 
 // C++ includes
@@ -28,7 +27,6 @@
 //
 #include "factory.h"
 #include "option.h"
-#include "linked_list.h"
 #include "command.h"
 #include "command_list.h"
 
