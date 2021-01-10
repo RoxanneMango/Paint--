@@ -1,10 +1,10 @@
 #include "paint.h"
 
-Paint::Paint(std::string savePATH, std::string loadPATH, std::string texturePATH) :
+Paint::Paint(std::string savePATH, std::string loadPATH, unsigned int maxCommands, std::string texturePATH) :
 	window(sf::VideoMode(winSizeX, winSizeY), "Paint--", sf::Style::Close), 
 	view(sf::Vector2f(0.0f,0.0f), sf::Vector2f(winSizeX, winSizeY)),
-	savePATH(savePATH), loadPATH(loadPATH),
-	commands(0, 25) // min elements ; max elements
+	savePATH(savePATH), loadPATH(loadPATH), maxCommands(maxCommands),
+	commands(maxCommands)
 {
 	try
 	{
@@ -118,7 +118,7 @@ Paint::update()
 {
 	if(isRunning)
 	{
-		if(sf::Mouse::getPosition(window).y < windowOffsetY)
+		if(sf::Mouse::getPosition(window).y < windowOffsetY || (sf::Mouse::getPosition(window).y < 0))
 		{
 			window.setMouseCursorVisible(true);
 			cursor->isVisible = false;
@@ -367,6 +367,7 @@ Paint::addActions()
 						isInteracted = true;
 						if(option == Option::OPEN_FILE)
 						{
+							commands.reset();
 							load();
 						}
 						else if(option == Option::SAVE_FILE)
@@ -375,15 +376,29 @@ Paint::addActions()
 						}
 						else if(option == Option::UNDO)
 						{
-//							commands
+							if(commands.get() != NULL)
+							{
+								if(!commands.isBegin())
+								{
+									commands.get()->undo();
+									commands--;
+								}
+							}
 						}
 						else if(option == Option::REDO)
 						{
-							
+							if(commands.get() != NULL)
+							{
+								if(!commands.isEnd())
+								{
+									commands++;
+									commands.get()->redo();
+								}
+							}
 						}
 						else if(option == Option::HELP)
 						{
-							
+							// just open a dialogue box saying 'I believe in you; you'll figure it out';
 						}
 						break;
 					}
@@ -395,21 +410,43 @@ Paint::addActions()
 					{
 						if(option == Option::MOVE)
 						{
+							if(isMovingShape)
+							{
+								commands.push_back( std::shared_ptr<ShapeCommand>
+									(
+										new MoveCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), (*shapeIterator)->body.getPosition(), oldPos)
+									)
+								);
+							}
 							isMovingShape = !isMovingShape;
-							selectedShape = (*shapeIterator);
+							if(isMovingShape)
+							{
+								oldPos = (*shapeIterator)->body.getPosition();
+							}
+							selectedShape = (*shapeIterator);							
 						}
 						else if(option == Option::SUB_Z)
 						{
 							if((shapeIterator) != userShapes.rend()-1)
 							{
 								std::iter_swap(shapeIterator+1, shapeIterator);
+								commands.push_back( std::shared_ptr<ShapeCommand>
+									(
+										new Z_indexCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), userShapes.end() - shapeIterator.base() )
+									)
+								);
 							}
 						}
 						else if(option == Option::ADD_Z)
 						{
-							if((shapeIterator) != userShapes.rbegin()+1)
+							if((shapeIterator) != userShapes.rbegin())
 							{
 								std::iter_swap(shapeIterator-1, shapeIterator);
+								commands.push_back( std::shared_ptr<ShapeCommand>
+									(
+										new Z_indexCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), userShapes.end() - shapeIterator.base() )
+									)
+								);
 							}
 						}
 						else if(option == Option::RESIZE_SUB)
@@ -418,6 +455,11 @@ Paint::addActions()
 							{
 								objectSize = (*shapeIterator)->getSize().x - objectSizeStep;
 								(*shapeIterator)->setSize(objectSize);
+								commands.push_back( std::shared_ptr<ShapeCommand>
+									(
+										new ResizeCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), objectSize, objectSize + objectSizeStep)
+									)
+								);
 							}
 						}
 						else if(option == Option::RESIZE_ADD)
@@ -426,19 +468,38 @@ Paint::addActions()
 							{
 								objectSize = (*shapeIterator)->getSize().x + objectSizeStep;
 								(*shapeIterator)->setSize(objectSize);
+								commands.push_back( std::shared_ptr<ShapeCommand>
+									(
+										new ResizeCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), objectSize, objectSize - objectSizeStep)
+									)
+								);
 							}
 						}
 						else if(option == Option::DELETE)
 						{
-							(*shapeIterator).reset();
-							userShapes.erase(std::next(shapeIterator).base());
+							commands.push_back( std::shared_ptr<ShapeCommand>
+								(
+									new DeleteCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), (*shapeIterator)->getOrder() )
+								)
+							);
+							userShapes.erase(std::next(shapeIterator).base());							
 						}
 						else if(option == Option::COLOR_OUTLINE)
 						{
+							commands.push_back( std::shared_ptr<ShapeCommand>
+								(
+									new ColorOutlineCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), color, (*shapeIterator)->body.getOutlineColor())
+								)
+							);
 							(*shapeIterator)->setOutlineColor(color);
 						}
 						else if(option == Option::COLOR_FILL)
 						{
+							commands.push_back( std::shared_ptr<ShapeCommand>
+								(
+									new ColorFillCommand( &userShapes, std::distance(shapeIterator, userShapes.rend()-1), color, (*shapeIterator)->body.getFillColor())
+								)
+							);
 							(*shapeIterator)->setFillColor(color);
 						}
 						break;
@@ -446,48 +507,52 @@ Paint::addActions()
 				}				
 				if(!isInteracted)
 				{
-					if (option == Option::CREATE_RECTANGLE)
+					if( ((int)option >= (int)Option::CREATE_RECTANGLE) && ((int)option <= (int)Option::CREATE_TRIANGLE) && (sf::Mouse::getPosition(window).y > windowOffsetY))
 					{
-						std::vector<std::string> recipe = {
-							"RECTANGLE",
-							std::to_string(sf::Mouse::getPosition(window).x),
-							std::to_string(sf::Mouse::getPosition(window).y),
-							std::to_string(objectSize),
-							std::to_string(objectSize),
-							Shape::getColor(color),
-							Shape::getColor(color),
-							Shape::getColor(color),
-							";"
-						};
+						std::vector<std::string> recipe;
+						if (option == Option::CREATE_RECTANGLE)
+						{
+							recipe = {
+								"RECTANGLE",
+								std::to_string(sf::Mouse::getPosition(window).x),
+								std::to_string(sf::Mouse::getPosition(window).y),
+								std::to_string(objectSize),
+								std::to_string(objectSize),
+								Shape::getColor(color),
+								Shape::getColor(color),
+								Shape::getColor(color)
+							};
+						}
+						else if(option == Option::CREATE_CIRCLE)
+						{
+							recipe = {
+								"CIRCLE",
+								std::to_string(sf::Mouse::getPosition(window).x),
+								std::to_string(sf::Mouse::getPosition(window).y),
+								std::to_string((int)(objectSize/2)),
+								Shape::getColor(color),
+								Shape::getColor(color),
+								Shape::getColor(color)
+							};
+						}
+						else if(option == Option::CREATE_TRIANGLE)
+						{
+							recipe = {
+								"TRIANGLE",
+								std::to_string(sf::Mouse::getPosition(window).x),
+								std::to_string(sf::Mouse::getPosition(window).y),
+								std::to_string((int)(objectSize/2)),
+								Shape::getColor(color),
+								Shape::getColor(color),
+								Shape::getColor(color)
+							};
+						}
 						userShapes.push_back(Factory::create(recipe));
-					}
-					else if(option == Option::CREATE_CIRCLE)
-					{
-						std::vector<std::string> recipe = {
-							"CIRCLE",
-							std::to_string(sf::Mouse::getPosition(window).x),
-							std::to_string(sf::Mouse::getPosition(window).y),
-							std::to_string(objectSize/2),
-							Shape::getColor(color),
-							Shape::getColor(color),
-							Shape::getColor(color),
-							";"
-						};
-						userShapes.push_back(Factory::create(recipe));
-					}
-					else if(option == Option::CREATE_TRIANGLE)
-					{
-						std::vector<std::string> recipe = {
-							"TRIANGLE",
-							std::to_string(sf::Mouse::getPosition(window).x),
-							std::to_string(sf::Mouse::getPosition(window).y),
-							std::to_string(objectSize/2),
-							Shape::getColor(color),
-							Shape::getColor(color),
-							Shape::getColor(color),
-							";"
-						};
-						userShapes.push_back(Factory::create(recipe));							
+						commands.push_back( std::shared_ptr<ShapeCommand>
+							(
+								new CreateCommand( &userShapes, recipe )
+							)
+						);
 					}
 				}
 				else

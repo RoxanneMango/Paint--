@@ -47,7 +47,12 @@ public:
 		
 		return s;
 	}
-	
+
+	std::vector<std::string> getOrder() override
+	{
+		return std::vector<std::string> { std::to_string((int)id) };
+	}
+
 	void setTexture(sf::Texture * texture)
 	{
 		this->texture = texture;

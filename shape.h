@@ -6,22 +6,17 @@
 class Shape
 {
 protected:
-	bool isSelected = false;
-	
 	sf::Vector2f size;
 	
 	sf::Color fillColor;
 	sf::Color outlineColor;
 	sf::Color selectColor;
-	
-	int z_index = 0;
-	
 public:
 	enum class ID { UNINITIALIZED = -1, CIRCLE = 0, RECTANGLE = 1, TRIANGLE = 2, ICON = 3};
-	ID id = ID::UNINITIALIZED;
-	sf::Shape & body;
 
+	ID id = ID::UNINITIALIZED;
 	bool isVisible = true;
+	sf::Shape & body;
 
 	Shape(sf::Shape & body) : body(body)
 	{}
@@ -30,7 +25,7 @@ public:
 	
 	virtual bool interact(sf::Shape & body)
 	{
-		if(&this->body == &body) return false; // if it is the same body return by default
+		if(&this->body == &body) return false; // if it is the same body, return by default
 		
 		float deltaX = this->body.getPosition().x - body.getPosition().x;
 		float deltaY = this->body.getPosition().y - body.getPosition().y;
@@ -46,16 +41,7 @@ public:
 		
 	}
 	virtual void update()
-	{	
-		if(isSelected)
-		{
-			body.setOutlineColor(selectColor);
-		}
-		else
-		{
-			body.setOutlineColor(outlineColor);
-		}
-	}
+	{}
 
 	static std::string
 	getColor(sf::Color color)
@@ -120,6 +106,7 @@ public:
 
 	virtual void draw(sf::RenderWindow & window) const = 0;
 	virtual std::string getReceipt() = 0;
+	virtual std::vector<std::string> getOrder() = 0;
 };
 
 #endif // SHAPE_H

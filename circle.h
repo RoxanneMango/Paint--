@@ -55,6 +55,20 @@ public:
 		
 		return s;
 	}
+	std::vector<std::string> getOrder() override
+	{
+		return std::vector<std::string>
+		{
+			getShapeID(id),
+			std::to_string((int)body.getPosition().x),
+			std::to_string((int)body.getPosition().y),
+			std::to_string((int)body.getRadius()),
+			getColor(fillColor),
+			getColor(outlineColor),
+			getColor(selectColor),
+			";"
+		};
+	}
 };
 
 #endif // CIRCLE_H

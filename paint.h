@@ -10,6 +10,8 @@
 #include <stdexcept>
 #include <fstream>
 #include <cstring>
+//
+#include <algorithm>
 
 // C++ includes
 #include <SFML/Graphics.hpp>
@@ -27,6 +29,8 @@
 #include "factory.h"
 #include "option.h"
 #include "linked_list.h"
+#include "command.h"
+#include "command_list.h"
 
 class Paint
 {
@@ -54,7 +58,11 @@ private:
 	double objectSizeStep = 10;
 
 	bool isMovingShape = false;
+	sf::Vector2f oldPos;
+	
 	bool isPressed = false;
+	
+	unsigned int maxCommands = 10;
 	
 	std::vector<Action> actions;	
 	std::vector<std::vector<std::string>> iconNames;
@@ -70,7 +78,7 @@ private:
 	Option previousOption = Option::COLOR_FILL;
 	sf::Color color = sf::Color::White;
 
-	LinkedList<Shape> commands;
+	CommandList commands;
 
 	// Private member functions
 	void addActions();
@@ -82,7 +90,7 @@ public:
 	bool isRunning = true;
 
 	// Public member functions
-	Paint(std::string savePATH, std::string loadPATH, std::string texturePATH);
+	Paint(std::string savePATH, std::string loadPATH, unsigned int maxCommands, std::string texturePATH);
 	~Paint();
 	
 	void handleEvents();

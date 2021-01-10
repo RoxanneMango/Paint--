@@ -40,10 +40,6 @@ public:
 	
 	virtual bool interact(sf::Shape & body) override
 	{
-		isSelected = false;
-		
-		//if(&this->body == &body) return false; // if it is the same body return by default
-		
 		float deltaX = this->body.getPosition().x - body.getPosition().x;
 		float deltaY = this->body.getPosition().y - body.getPosition().y;
 		//
@@ -57,19 +53,13 @@ public:
 				*optionPointer = option;
 				body.setTextureRect(textureRect);
 			}
-			isSelected = true;
 			return true;
 		}
 		return false;
 	}
 	
 	void update() override
-	{
-		if(isSelected)
-		{
-			
-		}
-	}
+	{}
 	
 	void draw(sf::RenderWindow & window) const override
 	{
@@ -79,6 +69,10 @@ public:
 	std::string getReceipt() override
 	{
 		return NULL;
+	}
+	std::vector<std::string> getOrder() override
+	{
+		return std::vector<std::string> { std::to_string((int)id) };
 	}
 };
 

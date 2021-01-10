@@ -5,7 +5,7 @@ main(int argc, char ** argv)
 {
 	try
 	{
-		std::unique_ptr<Paint> paint = std::make_unique<Paint>("orders.txt", "orders.txt", "icons.png");
+		std::unique_ptr<Paint> paint = std::make_unique<Paint>("orders.txt", "orders.txt", 25, "icons.png");
 		
 		paint->load();
 		while(paint->isRunning)
